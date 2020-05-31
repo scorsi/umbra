@@ -41,7 +41,7 @@ defmodule Umbra.MixProject do
       files: ~w(lib .formatter.exs mix.exs README* LICENSE*),
       licenses: ["MIT"],
       links: %{
-        "GitHub" => "https://github.com/elixir-ecto/postgrex"
+        "GitHub" => "https://github.com/scorsi/Umbra"
       }
     ]
   end
