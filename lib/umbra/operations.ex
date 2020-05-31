@@ -1,6 +1,4 @@
 defmodule Umbra.Operations do
-  @moduledoc false
-
   import Umbra.Helper
 
   # TODO: Manage all GenServer failures + Add start without linking support
