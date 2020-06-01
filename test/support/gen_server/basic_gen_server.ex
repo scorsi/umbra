@@ -1,4 +1,6 @@
 defmodule UmbraTest.Support.GenServer.BasicGenServer do
+  @moduledoc false
+
   use Umbra.GenServer
 
   definit do: {:ok, state}

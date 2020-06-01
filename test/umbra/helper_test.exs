@@ -15,7 +15,7 @@ defmodule UmbraTest.HelperTest do
     assert false == var_name?([name: :a_value])
     assert false == var_name?(
              quote do
-               def a_function(), do: :nothing
+               def a_function, do: :nothing
              end
            )
   end

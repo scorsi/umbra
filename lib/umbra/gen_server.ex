@@ -1,4 +1,8 @@
 defmodule Umbra.GenServer do
+  @moduledoc """
+  Umbra.GenServer
+  """
+
   @callback __start__(linked :: boolean(), state :: struct(), opts :: keyword()) :: {:ok, PID.t} | {:error, any()}
   @callback __get_pid__(pid_or_state :: struct() | PID.t) :: {:ok, PID.t} | {:error, any()}
   @callback __get_process_name__(state :: struct()) :: {:ok, any()} | {:error, any()}
@@ -11,24 +15,21 @@ defmodule Umbra.GenServer do
       unquote(behaviour)
 
       import Umbra.Operations
-      import Umbra.Responders
 
       @impl Umbra.GenServer
       def __start__(linked, state, opts) do
-        try do
-          if linked do
-            GenServer.start_link(__MODULE__, state, opts)
-          else
-            GenServer.start(__MODULE__, state, opts)
-          end
-        rescue
-          e in ArgumentError ->
-            case e.message do
-              "unknown registry" <> _ -> {:error, :unknown_registry}
-              _ -> {:error, {:unknown_error, e}}
-            end
-          e -> {:error, {:unknown_error, e}}
+        if linked do
+          GenServer.start_link(__MODULE__, state, opts)
+        else
+          GenServer.start(__MODULE__, state, opts)
         end
+      rescue
+        e in ArgumentError ->
+          case e.message do
+            "unknown registry" <> _ -> {:error, :unknown_registry}
+            _ -> {:error, {:unknown_error, e}}
+          end
+        e -> {:error, {:unknown_error, e}}
       end
 
       @impl Umbra.GenServer
@@ -45,7 +46,7 @@ defmodule Umbra.GenServer do
     end
   end
 
-  defmacro __before_compile__(env) do
+  defmacro __before_compile__(_env) do
     quote do
       @impl Umbra.GenServer
       def __get_pid__(_), do: {:error, :bad_arg}

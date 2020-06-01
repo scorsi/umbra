@@ -1,4 +1,8 @@
 defmodule Umbra.Behaviour.Strict do
+  @moduledoc """
+  Umbra.Behaviour.Strict
+  """
+
   defmacro __using__(_) do
     quote location: :keep do
       @behaviour GenServer

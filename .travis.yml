@@ -21,4 +21,4 @@ jobs:
     - elixir: '1.9'
       otp_release: '20.3'
 script:
-  - MIX_ENV=test mix test
+  - bin/test.sh

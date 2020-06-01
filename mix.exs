@@ -7,12 +7,23 @@ defmodule Umbra.MixProject do
       name: "Umbra",
       version: "0.0.1",
       elixir: "~> 1.7",
-      source_url: "https://github.com/scorsi/Umbra",
+      source_url: "https://github.com/scorsi/umbra",
+      homepage_url: "https://github.com/scorsi/umbra",
+      test_coverage: [
+        tool: ExCoveralls
+      ],
+      preferred_cli_env: [
+        coveralls: :test,
+        "coveralls.detail": :test,
+        "coveralls.post": :test,
+        "coveralls.html": :test
+      ],
       description: description(),
       package: package(),
       elixirc_paths: elixirc_paths(Mix.env),
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      docs: docs(),
     ]
   end
 
@@ -31,7 +42,10 @@ defmodule Umbra.MixProject do
 
   defp deps do
     [
-      {:ex_doc, ">= 0.0.0", only: :dev, runtime: false}
+      {:ex_doc, ">= 0.0.0", only: [:dev, :test]},
+      {:excoveralls, ">= 0.0.0", only: [:dev, :test]},
+      {:inch_ex, ">= 0.0.0", only: [:dev, :docs, :test]},
+      {:credo, ">= 0.0.0", only: [:dev, :test]},
     ]
   end
 
@@ -41,8 +55,15 @@ defmodule Umbra.MixProject do
       files: ~w(lib .formatter.exs mix.exs README* LICENSE*),
       licenses: ["MIT"],
       links: %{
-        "GitHub" => "https://github.com/scorsi/Umbra"
+        "GitHub" => "https://github.com/scorsi/umbra",
       }
+    ]
+  end
+
+  defp docs do
+    [
+      main: "readme",
+      extras: ["README.md"]
     ]
   end
 end

@@ -1,4 +1,8 @@
 defmodule Umbra.Extension.Registry do
+  @moduledoc """
+  Umbra.Extension.Registry
+  """
+
   defmacro __using__(opts) do
     registry = Keyword.get(opts, :registry)
     via_key = Keyword.get(opts, :via_key)
@@ -11,16 +15,13 @@ defmodule Umbra.Extension.Registry do
 
       @impl Umbra.GenServer
       def __get_pid__(state) when is_struct(state) do
-        try do
-          with [{pid, _}] <- Registry.lookup(unquote(registry), (unquote(via_key)).(state)) do
-            {:ok, pid}
-          else
-            [] -> {:error, :process_not_found}
-            _ -> {:error, :unknown_error}
-          end
-        rescue
-          ArgumentError -> {:error, :unknown_registry}
+        case Registry.lookup(unquote(registry), (unquote(via_key)).(state)) do
+          [{pid, _}] -> {:ok, pid}
+          [] -> {:error, :process_not_found}
+          _ -> {:error, :unknown_error}
         end
+      rescue
+        ArgumentError -> {:error, :unknown_registry}
       end
 
       @impl Umbra.GenServer

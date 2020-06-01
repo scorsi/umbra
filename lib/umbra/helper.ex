@@ -1,4 +1,8 @@
 defmodule Umbra.Helper do
+  @moduledoc """
+  Umbra.Helper
+  """
+
   defmacro var_name?(arg_name) do
     quote do
       is_atom(unquote(arg_name)) and not (unquote(arg_name) in [

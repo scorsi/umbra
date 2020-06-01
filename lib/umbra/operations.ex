@@ -1,8 +1,11 @@
 defmodule Umbra.Operations do
+  @moduledoc """
+  Umbra.Operations
+  """
+
   import Umbra.Helper
 
-  # TODO: Manage all GenServer failures + Add start without linking support
-  defmacro defstart(definition, opts \\ [], body \\ []) do
+  defmacro defstart(definition, opts \\ []) do
     {fun, _} = extract_definition(definition)
     quote bind_quoted: [
             fun: fun,
@@ -65,12 +68,12 @@ defmodule Umbra.Operations do
 
     quote do
       def unquote(fun)(unquote_splicing(args)) do
-        with {:ok, pid} <- __get_pid__(pid_or_state) do
-          case GenServer.unquote(type)(pid, unquote(handler)) do
-            :ok -> :ok
-            result -> {:ok, result}
-          end
-        else
+        case  __get_pid__(pid_or_state) do
+          {:ok, pid} ->
+            case GenServer.unquote(type)(pid, unquote(handler)) do
+              :ok -> :ok
+              result -> {:ok, result}
+            end
           error -> error
         end
       end
@@ -91,7 +94,7 @@ defmodule Umbra.Operations do
     end
   end
 
-  defp generate_handler_tuple(fun, args) when length(args) == 0, do: quote do: {unquote(fun)}
+  defp generate_handler_tuple(fun, args) when args == [], do: quote do: {unquote(fun)}
   defp generate_handler_tuple(fun, args), do: quote do: {unquote(fun), unquote_splicing(args)}
 
   defp generate_server_function_def(:call, handler, state) do
