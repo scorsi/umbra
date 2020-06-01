@@ -1,0 +1,19 @@
+language: elixir
+cache:
+  directories:
+    - $HOME/.mix
+elixir:
+  - 1.8.1
+  - 1.9.1
+  - 1.10.0
+otp_release:
+  - 21.3
+  - 22.2
+jobs:
+  include:
+    - elixir: '1.8'
+      otp_release: '20.3'
+    - elixir: '1.9.1'
+      otp_release: '20.3'
+script:
+  - MIX_ENV=test mix test
