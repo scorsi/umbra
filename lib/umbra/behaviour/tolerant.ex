@@ -22,7 +22,7 @@ defmodule Umbra.Behaviour.Tolerant do
         code_change: 3
       ]
 
-      @before_compile GSMacro.Behaviour.Tolerant
+      @before_compile Umbra.Behaviour.Tolerant
     end
   end
 

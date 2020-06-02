@@ -22,7 +22,7 @@ defmodule Umbra.Behaviour.Strict do
         code_change: 3
       ]
 
-      @before_compile GSMacro.Behaviour.Strict
+      @before_compile Umbra.Behaviour.Strict
     end
   end
 

@@ -48,6 +48,9 @@ defmodule Umbra.Operations do
 
   defp generate_functions(type, definition, opts) do
     {fun, args} = extract_definition(definition)
+    args =
+      args
+      |> Enum.map(fn arg -> Macro.var(arg, nil) end)
     handler = generate_handler_tuple(fun, args)
     server_function = generate_server_function(type, handler, opts)
     client_function =

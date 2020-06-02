@@ -36,22 +36,22 @@ defmodule UmbraTest.HelperTest do
                {:my_func_another_func}
              end
            )
-    assert {:my_func, [{:arg1, _, _}]} = extract_definition(
+    assert {:my_func, [:arg1]} = extract_definition(
              quote do
                {:my_func, arg1}
              end
            )
-    assert {:my_func_bis, [{:arg1, _, _}]} = extract_definition(
+    assert {:my_func_bis, [:arg1]} = extract_definition(
              quote do
                my_func_bis(arg1)
              end
            )
-    assert {:wow, [{:arg1, _, _}, {:arg2, _, _}]} = extract_definition(
+    assert {:wow, [:arg1, :arg2]} = extract_definition(
              quote do
                {:wow, arg1, arg2}
              end
            )
-    assert {:get_state, [{:arg1, _, _}, {:arg2, _, _}]} = extract_definition(
+    assert {:get_state, [:arg1, :arg2]} = extract_definition(
              quote do
                get_state(arg1, arg2)
              end

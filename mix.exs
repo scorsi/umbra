@@ -1,11 +1,13 @@
 defmodule Umbra.MixProject do
   use Mix.Project
 
+  @release_version "0.0.3"
+
   def project do
     [
       app: :umbra,
       name: "Umbra",
-      version: "0.0.2",
+      version: @release_version,
       elixir: "~> 1.7",
       source_url: "https://github.com/scorsi/umbra",
       homepage_url: "https://github.com/scorsi/umbra",
@@ -63,7 +65,19 @@ defmodule Umbra.MixProject do
   defp docs do
     [
       main: "readme",
-      extras: ["README.md"]
+      extras: ["README.md"],
+      groups_for_extras: [],
+      groups_for_modules: [
+        Behaviours: [
+          Umbra.Behaviour.Default,
+          Umbra.Behaviour.Strict,
+          Umbra.Behaviour.Tolerant,
+        ],
+        Extensions: [
+          Umbra.Extension.NameSetter,
+          Umbra.Extension.Registry
+        ],
+      ],
     ]
   end
 end
