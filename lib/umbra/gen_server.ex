@@ -3,6 +3,7 @@ defmodule Umbra.GenServer do
   The `Umbra.GenServer` is the only module users should care.
 
   You only need to use that module to get started.
+  `Umbra.Operations` is include behind the scene to adds macros and so function generators.
 
   Example:
   ```
@@ -75,8 +76,19 @@ defmodule Umbra.GenServer do
   @callback __get_pid__(pid_or_state :: struct() | PID.t) :: {:ok, PID.t} | {:error, any()}
 
   @doc """
+  This callback is used to do some changement on state or just initialize some stuff for extensions.
+
+  It's a callback which only should be override! You should call `super(state)` when success
+  at the end of your own implementation.
+
+  The `Umbra.Extension.Ping` extension did set this callback to initialize itself.
+  """
+  @callback __init__(state :: struct()) :: {:ok, struct()} | {:error, any()}
+
+  @doc """
   This macro is used to implements the requested behaviour, callbacks and generate `start/2` and `start_link/2` functions.
   """
+  @doc false
   defmacro __using__(opts) do
     behaviour = Keyword.get(opts, :behaviour, Umbra.Behaviour.Default)
     quote location: :keep do
@@ -86,6 +98,7 @@ defmodule Umbra.GenServer do
 
       import Umbra.Operations
 
+      @doc false
       @impl Umbra.GenServer
       def __start__(linked, state, opts) do
         if linked do
@@ -102,14 +115,22 @@ defmodule Umbra.GenServer do
         e -> {:error, {:unknown_error, e}}
       end
 
+      @doc false
+      @impl Umbra.GenServer
+      def __init__(state), do: {:ok, state}
+
+      @doc false
       @impl Umbra.GenServer
       def __get_pid__(pid) when is_pid(pid), do: {:ok, pid}
 
+      @doc false
       def start_link(state, opts \\ []), do: __MODULE__.__start__(true, state, opts)
+      @doc false
       def start(state, opts \\ []), do: __MODULE__.__start__(false, state, opts)
 
       defoverridable [
         __start__: 3,
+        __init__: 1,
       ]
 
       @before_compile Umbra.GenServer
@@ -117,10 +138,12 @@ defmodule Umbra.GenServer do
   end
 
   @doc """
-  This macro is used to create a fallback for `c:__get_pid__/1` callback.
+  This macro is used to create a fallback for `c:__get_pid__/1` and `c:__init__/1` callback.
   """
+  @doc false
   defmacro __before_compile__(_env) do
     quote do
+      @doc false
       @impl Umbra.GenServer
       def __get_pid__(_), do: {:error, :bad_arg}
     end

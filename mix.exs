@@ -44,6 +44,9 @@ defmodule Umbra.MixProject do
 
   defp deps do
     [
+      {:keyword_validator, "~> 1.0"},
+
+
       {:ex_doc, ">= 0.0.0", only: [:dev, :test]},
       {:excoveralls, ">= 0.0.0", only: [:dev, :test]},
       {:inch_ex, ">= 0.0.0", only: [:dev, :docs, :test]},
@@ -75,8 +78,14 @@ defmodule Umbra.MixProject do
         ],
         Extensions: [
           Umbra.Extension.NameSetter,
-          Umbra.Extension.Registry
+          Umbra.Extension.Registry,
+          Umbra.Extension.Ping,
         ],
+        Internal: [
+          Umbra.Operations,
+          Umbra.CodeGenerator,
+          Umbra.DefinitionExtractor,
+        ]
       ],
     ]
   end

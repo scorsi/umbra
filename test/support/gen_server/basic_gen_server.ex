@@ -3,11 +3,11 @@ defmodule UmbraTest.Support.GenServer.BasicGenServer do
 
   use Umbra.GenServer
 
-  definit do: {:ok, state}
+  definit state: state, do: {:ok, state}
 
-  defcall {:get_state}, do: {:reply, state, state}
+  defcall {:get_state}, state: state, do: {:reply, state, state}
 
-  defcast {:set_state, new_state}, do: {:noreply, new_state}
+  defcast {:set_state, new_state}, state: state, do: {:noreply, new_state}
 
   defcast {:increment}, state: state, do: {:noreply, state + 1}
 
