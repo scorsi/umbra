@@ -12,13 +12,13 @@ otp_release:
   - 22.3
 jobs:
   include:
-    - elixir: '1.7'
+    - elixir: '1.7.4'
       otp_release: '19.3'
-    - elixir: '1.7'
+    - elixir: '1.7.4'
       otp_release: '20.3'
-    - elixir: '1.8'
+    - elixir: '1.8.2'
       otp_release: '20.3'
-    - elixir: '1.9'
+    - elixir: '1.9.4'
       otp_release: '20.3'
 script:
   - bin/test.sh
