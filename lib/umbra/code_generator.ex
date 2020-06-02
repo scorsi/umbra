@@ -112,7 +112,8 @@ defmodule Umbra.CodeGenerator do
         {:ok, pid} ->
           case Process.send(
                  unquote(Macro.var(:pid_or_state, nil)),
-                 unquote(argument)
+                 unquote(argument),
+                 []
                ) do
             :ok -> :ok
             error -> {:error, error}

@@ -103,7 +103,7 @@ defmodule Umbra.Operations do
 
   @doc """
   Generate the `GenServer` `c:GenServer.handle_info/2` callback and
-  a client method to call the function through `Process.send/2`.
+  a client method to call the function through `Process.send/3`.
 
   By default only generate the server-side function.
   The client-side function can be useful sometimes.
