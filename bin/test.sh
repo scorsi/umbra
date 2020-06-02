@@ -26,11 +26,11 @@ if [ "$CI" ]; then
     echo "----------------------------------------------------------"
     MIX_ENV="test" mix coveralls.travis || { echo 'Coverage failed!'; exit 1; }
     echo "Done!"
-    echo "----------------------------------------------------------"
-    echo "Running inch.report..."
-    echo "----------------------------------------------------------"
-    MIX_ENV="docs" mix inch.report || { echo 'Inch report failed!'; exit 1; }
-    echo "Done!"
+#    echo "----------------------------------------------------------"
+#    echo "Running inch.report..."
+#    echo "----------------------------------------------------------"
+#    MIX_ENV="docs" mix inch.report || { echo 'Inch report failed!'; exit 1; }
+#    echo "Done!"
   else
     echo "----------------------------------------------------------"
     echo "Running coveralls..."
