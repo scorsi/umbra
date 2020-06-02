@@ -5,7 +5,7 @@ defmodule Umbra.GenServer do
 
   @callback __start__(linked :: boolean(), state :: struct(), opts :: keyword()) :: {:ok, PID.t} | {:error, any()}
   @callback __get_pid__(pid_or_state :: struct() | PID.t) :: {:ok, PID.t} | {:error, any()}
-  @callback __get_process_name__(state :: struct()) :: {:ok, any()} | {:error, any()}
+  @callback __get_process_name__(state :: struct()) :: {:ok, any() | nil} | {:error, any()}
 
   defmacro __using__(opts) do
     behaviour = generate_behaviour(Keyword.get(opts, :behaviour, Umbra.Behaviour.Default))

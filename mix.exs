@@ -5,7 +5,7 @@ defmodule Umbra.MixProject do
     [
       app: :umbra,
       name: "Umbra",
-      version: "0.0.1",
+      version: "0.0.2",
       elixir: "~> 1.7",
       source_url: "https://github.com/scorsi/umbra",
       homepage_url: "https://github.com/scorsi/umbra",

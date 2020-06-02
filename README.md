@@ -12,7 +12,7 @@ Add umbra for Elixir as a dependency in your mix.exs file.
 ```elixir
 def deps do
   [
-    {:umbra, "~> 0.0.1"},
+    {:umbra, "~> 0.0.2"},
   ]
 end
 ```
