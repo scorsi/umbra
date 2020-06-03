@@ -36,7 +36,6 @@ defmodule Umbra.CodeGenerator do
     |> add_when_in_function_ast(function_name, guards)
   end
 
-
   defp change_private_in_function_ast(function, _function_name, false), do: function
   defp change_private_in_function_ast(function, function_name, true) do
     function
