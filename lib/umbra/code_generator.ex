@@ -77,9 +77,6 @@ defmodule Umbra.CodeGenerator do
            {_ = def, _ = context, [{^function_name, _, _} = func_def, body]} ->
              {def, context, [{:when, context, [func_def, guards]}, body]}
 
-           {_, _, [{:when, _, [{^function_name, _, _}, _]}, _]} ->
-             raise(RuntimeError, message: "a when clause is already declared")
-
            other -> other
          end
        )
@@ -102,8 +99,6 @@ defmodule Umbra.CodeGenerator do
       guards
     )
   end
-  def generate_client_function(type, _, _),
-      do: raise(ArgumentError, message: "invalid type for client function, got: #{type}")
 
   defp generate_client_inner_function(:info, argument) do
     quote do
@@ -148,8 +143,6 @@ defmodule Umbra.CodeGenerator do
       guards
     )
   end
-  def generate_server_function(type, _, _),
-      do: raise(ArgumentError, message: "invalid type for server function, got: #{type}")
 
   defp generate_server_inner_function(:init, body) do
     quote do
