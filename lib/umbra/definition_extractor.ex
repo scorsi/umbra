@@ -121,6 +121,29 @@ defmodule Umbra.DefinitionExtractor do
   end
 
   @doc """
+  This macro help know if the given atom is a Elixir registered keyword.
+
+  Example:
+
+    iex> Umbra.DefinitionExtractor.is_registered_keyword?(:def)
+    true
+
+    iex> Umbra.DefinitionExtractor.is_registered_keyword?(:toto)
+    false
+  """
+  defmacro is_registered_keyword?(op) do
+    quote do
+      unquote(op) in [
+        :def,
+        :defp,
+        :defmacro,
+        :defmacrop,
+        :defmodule,
+      ]
+    end
+  end
+
+  @doc """
   This macro help know if the given atom is a valid name for functions or variables.
   It should be used in when guards.
 
@@ -162,8 +185,14 @@ defmodule Umbra.DefinitionExtractor do
       iex> Umbra.DefinitionExtractor.extract_function_name(quote do: {:toto, a})
       :toto
 
+      iex> Umbra.DefinitionExtractor.extract_function_name(quote do: {:wow, a, b})
+      :wow
+
       iex> Umbra.DefinitionExtractor.extract_function_name(quote do: {:my_func})
       :my_func
+
+      iex> Umbra.DefinitionExtractor.extract_function_name(quote do: %{oops: true})
+      ** (ArgumentError) invalid function definition
   """
   @spec extract_function_name(definition :: tuple() | atom()) :: atom()
   def extract_function_name(definition)
@@ -308,6 +337,9 @@ defmodule Umbra.DefinitionExtractor do
 
       iex> Umbra.DefinitionExtractor.extract_inner_arguments_for_call(quote do: toto())
       ** (ArgumentError) invalid argument declaration
+
+      iex> Umbra.DefinitionExtractor.extract_inner_arguments_for_call(quote do: (defmodule TOTO do end))
+      ** (ArgumentError) invalid argument declaration
   """
   @spec extract_inner_arguments_for_call(definition :: tuple() | atom()) :: [tuple()]
   def extract_inner_arguments_for_call(definition)
@@ -321,6 +353,9 @@ defmodule Umbra.DefinitionExtractor do
   def extract_inner_arguments_for_call({op, _ = context, args})
       when is_op?(op) and is_list(args),
       do: {op, context, Enum.map(args, &extract_inner_arguments_for_call/1)}
+  def extract_inner_arguments_for_call({a, _, _})
+      when is_registered_keyword?(a),
+      do: raise(ArgumentError, message: "invalid argument declaration")
   def extract_inner_arguments_for_call({fun, _, []})
       when is_var_name?(fun),
       do: raise(ArgumentError, message: "invalid argument declaration")
@@ -413,9 +448,6 @@ defmodule Umbra.DefinitionExtractor do
   def shadow_inner_arguments({op, _ = context, values})
       when is_op?(op),
       do: {op, context, Enum.map(values, &shadow_inner_arguments/1)}
-  def shadow_inner_arguments(map)
-      when is_map(map),
-      do: Enum.map(map, &shadow_inner_arguments/1)
   def shadow_inner_arguments(list)
       when is_list(list),
       do: Enum.map(list, &shadow_inner_arguments/1)
