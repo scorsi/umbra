@@ -42,19 +42,33 @@ defmodule Umbra.Extension.Registry do
 
   @doc false
   defmacro __using__(opts) do
+    KeywordValidator.validate!(
+      opts,
+      %{
+        registry: [
+          type: [:module, :atom, :tuple], # add tuple to cheat macros
+          required: true
+        ],
+        via_key: [
+          type: [{:function, 1}, :tuple], # add tuple to cheat macros
+          required: true
+        ]
+      }
+    )
+
     registry = Keyword.get(opts, :registry)
     via_key = Keyword.get(opts, :via_key)
 
     quote location: :keep do
       @doc false
       @impl Umbra.Extension.NameSetter
-      def __get_process_name__(%__MODULE__{} = state) do
+      def __get_process_name__(%{} = state) do
         {:ok, {:via, Registry, {unquote(registry), (unquote(via_key)).(state)}}}
       end
 
       @doc false
       @impl Umbra.GenServer
-      def __get_pid__(%__MODULE__{} = state) do
+      def __get_pid__(%{} = state) do
         case Registry.lookup(unquote(registry), (unquote(via_key)).(state)) do
           [{pid, _}] -> {:ok, pid}
           [] -> {:error, :process_not_found}
