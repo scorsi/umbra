@@ -109,11 +109,7 @@ defmodule Umbra.CodeGenerator do
     quote do
       case  __get_pid__(unquote(Macro.var(:pid_or_state, nil))) do
         {:ok, pid} ->
-          case Process.send(
-                 unquote(Macro.var(:pid_or_state, nil)),
-                 unquote(argument),
-                 []
-               ) do
+          case Process.send(pid, unquote(argument), []) do
             :ok -> :ok
             error -> {:error, error}
           end
@@ -125,10 +121,7 @@ defmodule Umbra.CodeGenerator do
     quote do
       case  __get_pid__(unquote(Macro.var(:pid_or_state, nil))) do
         {:ok, pid} ->
-          case GenServer.unquote(type)(
-                 unquote(Macro.var(:pid_or_state, nil)),
-                 unquote(argument)
-               ) do
+          case GenServer.unquote(type)(pid, unquote(argument)) do
             :ok -> :ok
             result -> {:ok, result}
           end
