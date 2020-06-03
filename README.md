@@ -61,19 +61,17 @@ The project is tested for:
 
 | Elixir version | OTP version |
 | --- | --- |
-| 1.7.4 | 19.4 |
-| 1.7.4 | 20.3 |
 | 1.7.4 | 21.3 |
 | 1.7.4 | 22.3 |
-| 1.8.2 | 20.3 |
 | 1.8.2 | 21.3 |
 | 1.8.2 | 22.3 |
-| 1.9.4 | 20.3 |
 | 1.9.4 | 21.3 |
 | 1.9.4 | 22.3 |
 | 1.10.3 | 21.3 |
 | 1.10.3 | 22.3 |
 | 1.10.3 | 23.0 |
+
+Compatibility-issues only in tests for `otp < 21`.
 
 ## Contributing
 
