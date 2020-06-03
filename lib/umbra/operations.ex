@@ -170,20 +170,8 @@ defmodule Umbra.Operations do
   defmacro defcontinue(definition, opts \\ [], body \\ []),
            do: do_def(:continue, definition, opts ++ body)
 
-  @doc """
-  Only used to reduce code duplication
-  """
-  @spec do_def(atom(), tuple(), list()) :: tuple()
   defp do_def(type, definition, options),
        do: generate(type, definition, options(type, options))
-
-  @doc """
-  Generate client and server function in the module thanks to the `Umbra.CodeGenerator` module.
-
-  Must be called from a macro.
-  """
-  @spec generate(atom(), atom() | tuple(), list()) :: tuple()
-  defp generate(type, definition, opts)
 
   defp generate(type, def, opts) do
     functions =
@@ -200,14 +188,6 @@ defmodule Umbra.Operations do
     functions
     |> CodeGenerator.add_to_module()
   end
-
-  @doc """
-  Checks the options depending of the handler type.
-
-  If invalid options are passed, raise an error.
-  """
-  @spec options(atom(), list()) :: list()
-  defp options(type, options)
 
   defp options(:init, opts) do
     KeywordValidator.validate!(

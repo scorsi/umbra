@@ -44,7 +44,6 @@ defmodule Umbra.Extension.Registry do
   This macro is used to override `c:Umbra.Extension.NameSetter.__get_process_name__/1` and
   `c:Umbra.GenServer.__get_pid__/1` callbacks.
   """
-  @doc false
   defmacro __using__(opts) do
     registry = Keyword.get(opts, :registry)
     via_key = Keyword.get(opts, :via_key)

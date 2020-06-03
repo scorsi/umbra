@@ -7,7 +7,6 @@ defmodule Umbra.Behaviour.Strict do
   - all handlers fallback returning `{:stop, {:bad_*, msg}, state}`
   """
 
-  @doc false
   defmacro __using__(_) do
     quote location: :keep do
       @behaviour GenServer
@@ -34,7 +33,6 @@ defmodule Umbra.Behaviour.Strict do
     end
   end
 
-  @doc false
   defmacro __before_compile__(_env) do
     quote do
       @doc false

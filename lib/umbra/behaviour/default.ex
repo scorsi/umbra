@@ -5,7 +5,6 @@ defmodule Umbra.Behaviour.Default do
   It only does `use GenServer` behind the scene.
   """
 
-  @doc false
   defmacro __using__(_) do
     quote location: :keep do
       use GenServer
