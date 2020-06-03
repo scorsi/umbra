@@ -39,12 +39,10 @@ defmodule Umbra.Extension.NameSetter do
   """
   @callback __get_process_name__(state :: struct()) :: {:ok, any() | nil} | {:error, any()}
 
-  @doc """
-  This macro allow setting an override to the `c:Umbra.GenServer.__start__/3` callback and
-  define a `c:__get_process_name__/1` callback fallback thanks to `__before_compile__/1`.
-  """
+  @doc false
   defmacro __using__(_opts) do
     quote location: :keep do
+      @doc false
       @impl Umbra.GenServer
       def __start__(linked, state, opts) do
         opts = case Keyword.pop(opts, :name) do
@@ -64,11 +62,10 @@ defmodule Umbra.Extension.NameSetter do
     end
   end
 
-  @doc """
-  This macro is used to create a fallback for `c:__get_process_name__/1` callback.
-  """
+  @doc false
   defmacro __before_compile__(_env) do
     quote do
+      @doc false
       @impl Umbra.Extension.NameSetter
       def __get_process_name__(_), do: {:ok, nil}
     end

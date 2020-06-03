@@ -39,7 +39,7 @@ defmodule Umbra.MixProject do
   end
 
   defp description do
-    "Umbra helps you make your GenServer rocks in lesser code"
+    "Umbra helps you make your GenServer rocks in lesser code, inspired by ExActor"
   end
 
   defp deps do

@@ -85,9 +85,7 @@ defmodule Umbra.GenServer do
   """
   @callback __init__(state :: struct()) :: {:ok, struct()} | {:error, any()}
 
-  @doc """
-  This macro is used to implements the requested behaviour, callbacks and generate `start/2` and `start_link/2` functions.
-  """
+  @doc false
   defmacro __using__(opts) do
     behaviour = Keyword.get(opts, :behaviour, Umbra.Behaviour.Default)
     quote location: :keep do
@@ -136,9 +134,7 @@ defmodule Umbra.GenServer do
     end
   end
 
-  @doc """
-  This macro is used to create a fallback for `c:__get_pid__/1` and `c:__init__/1` callback.
-  """
+  @doc false
   defmacro __before_compile__(_env) do
     quote do
       @doc false

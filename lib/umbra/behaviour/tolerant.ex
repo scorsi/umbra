@@ -11,8 +11,9 @@ defmodule Umbra.Behaviour.Tolerant do
   ```
   """
 
+  @doc false
   defmacro __using__(_) do
-    quote location: :keep do
+    quote do
       @behaviour GenServer
 
       @doc false
@@ -37,6 +38,7 @@ defmodule Umbra.Behaviour.Tolerant do
     end
   end
 
+  @doc false
   defmacro __before_compile__(_env) do
     quote do
       @doc false
