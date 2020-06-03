@@ -31,7 +31,7 @@ defmodule Umbra.Operations do
   """
   @spec definit(list(), list()) :: tuple()
   defmacro definit(opts \\ [], body \\ []),
-           do: do_def(:init, nil, opts ++ body)
+           do: generate(:init, nil, opts ++ body)
 
   @doc """
   Generate the `GenServer` `c:GenServer.handle_call/3` callback and
@@ -65,7 +65,7 @@ defmodule Umbra.Operations do
   """
   @spec defcall(atom() | tuple(), list(), list()) :: tuple()
   defmacro defcall(definition, opts \\ [], body \\ []),
-           do: do_def(:call, definition, opts ++ body)
+           do: generate(:call, definition, opts ++ body)
 
   @doc """
   Generate the `GenServer` `c:GenServer.handle_cast/2` callback and
@@ -99,7 +99,7 @@ defmodule Umbra.Operations do
   """
   @spec defcast(atom() | tuple(), list(), list()) :: tuple()
   defmacro defcast(definition, opts \\ [], body \\ []),
-           do: do_def(:cast, definition, opts ++ body)
+           do: generate(:cast, definition, opts ++ body)
 
   @doc """
   Generate the `GenServer` `c:GenServer.handle_info/2` callback and
@@ -138,7 +138,7 @@ defmodule Umbra.Operations do
   """
   @spec definfo(atom() | tuple(), list(), list()) :: tuple()
   defmacro definfo(definition, opts \\ [], body \\ []),
-           do: do_def(:info, definition, opts ++ body)
+           do: generate(:info, definition, opts ++ body)
 
   @doc """
   Generate the `GenServer` `c:GenServer.handle_continue/2` callback.
@@ -168,12 +168,14 @@ defmodule Umbra.Operations do
   """
   @spec defcontinue(atom() | tuple(), list(), list()) :: tuple()
   defmacro defcontinue(definition, opts \\ [], body \\ []),
-           do: do_def(:continue, definition, opts ++ body)
-
-  defp do_def(type, definition, options),
-       do: generate(type, definition, options(type, options))
+           do: generate(:continue, definition, opts ++ body)
 
   defp generate(type, def, opts) do
+    opts = options(type, opts)
+
+    if Keyword.get(opts, :server) and Keyword.get(opts, :do) == nil,
+       do: raise(ArgumentError, message: "a body should be given when defining a server function")
+
     functions =
       [
         (if Keyword.get(opts, :client), do: CodeGenerator.generate_client_function(type, def, opts)),
@@ -201,7 +203,6 @@ defmodule Umbra.Operations do
         when: [],
         state: [],
         do: [
-          required: true
         ],
       }
     )
@@ -226,7 +227,6 @@ defmodule Umbra.Operations do
         state: [],
         from: [],
         do: [
-          required: true
         ],
       }
     )
@@ -250,7 +250,6 @@ defmodule Umbra.Operations do
         when: [],
         state: [],
         do: [
-          required: true
         ],
       }
     )
@@ -274,7 +273,6 @@ defmodule Umbra.Operations do
         when: [],
         state: [],
         do: [
-          required: true
         ],
       }
     )
@@ -291,7 +289,6 @@ defmodule Umbra.Operations do
         when: [],
         state: [],
         do: [
-          required: true
         ],
       }
     )
