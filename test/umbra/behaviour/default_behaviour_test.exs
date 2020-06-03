@@ -39,7 +39,12 @@ defmodule UmbraTest.Behaviour.DefaultBehaviourTest do
       Process.sleep(500)
     end
 
+    cond do
+      System.version |> Version.match?(">= 1.10.0") ->
+        assert capture_log(fun) =~ ~r/\[error\] \[message: :whatever_info, module: UmbraTest\.Support\.Behaviour\.DefaultBehaviour, name: #PID<\d+\.\d+\.\d+>\]/u
 
-    assert capture_log(fun) =~ ~r/\[error\] \[message: :whatever_info, module: UmbraTest\.Support\.Behaviour\.DefaultBehaviour, name: #PID<\d+\.\d+\.\d+>\]/u
+      true ->
+        assert capture_log(fun) =~ ~r/\[error\] UmbraTest\.Support\.Behaviour\.DefaultBehaviour #PID<\d+\.\d+\.\d+> received unexpected message in handle_info\/2: :whatever_info/u
+    end
   end
 end
