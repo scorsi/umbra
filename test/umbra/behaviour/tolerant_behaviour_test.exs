@@ -14,7 +14,7 @@ defmodule UmbraTest.Behaviour.TolerantBehaviourTest do
 
     fun = fn ->
       Task.start(fn -> GenServer.call(pid, :whatever_call, 200) end)
-      Process.sleep(500)
+      Process.sleep(300)
     end
 
     assert capture_log(fun) =~ ~r/\*\* \(stop\) exited in: GenServer\.call\(#PID<\d+\.\d+\.\d+>, :whatever_call, \d+\)/
@@ -25,7 +25,7 @@ defmodule UmbraTest.Behaviour.TolerantBehaviourTest do
 
     fun = fn ->
       Task.start(fn -> GenServer.cast(pid, :whatever_cast) end)
-      Process.sleep(500)
+      Process.sleep(300)
     end
 
     assert capture_log(fun) == ""
@@ -36,7 +36,7 @@ defmodule UmbraTest.Behaviour.TolerantBehaviourTest do
 
     fun = fn ->
       Task.start(fn -> Process.send(pid, :whatever_info, []) end)
-      Process.sleep(500)
+      Process.sleep(300)
     end
 
     assert capture_log(fun) == ""

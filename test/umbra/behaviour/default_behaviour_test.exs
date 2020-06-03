@@ -14,7 +14,7 @@ defmodule UmbraTest.Behaviour.DefaultBehaviourTest do
 
     fun = fn ->
       Task.start(fn -> GenServer.call(pid, :whatever_call) end)
-      Process.sleep(500)
+      Process.sleep(300)
     end
 
     assert capture_log(fun) =~ ~r/\*\* \(RuntimeError\) attempted to call GenServer #PID<\d+\.\d+\.\d+> but no handle_call\/3 clause was provided/u
@@ -25,7 +25,7 @@ defmodule UmbraTest.Behaviour.DefaultBehaviourTest do
 
     fun = fn ->
       Task.start(fn -> GenServer.cast(pid, :whatever_cast) end)
-      Process.sleep(500)
+      Process.sleep(300)
     end
 
     assert capture_log(fun) =~ ~r/\*\* \(RuntimeError\) attempted to cast GenServer #PID<\d+\.\d+\.\d+> but no handle_cast\/2 clause was provided/u
@@ -36,7 +36,7 @@ defmodule UmbraTest.Behaviour.DefaultBehaviourTest do
 
     fun = fn ->
       Task.start(fn -> Process.send(pid, :whatever_info, []) end)
-      Process.sleep(500)
+      Process.sleep(300)
     end
 
     cond do

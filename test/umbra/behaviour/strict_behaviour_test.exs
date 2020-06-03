@@ -12,7 +12,7 @@ defmodule UmbraTest.Behaviour.StrictBehaviourTest do
 
   test "with init should create" do
     {:ok, pid} = StrictBehaviour.start_link(42)
-    Process.sleep(500)
+    Process.sleep(300)
     assert 42 == :sys.get_state(pid)
   end
 
@@ -21,7 +21,7 @@ defmodule UmbraTest.Behaviour.StrictBehaviourTest do
 
     fun = fn ->
       Task.start(fn -> GenServer.call(pid, :whatever_call) end)
-      Process.sleep(500)
+      Process.sleep(300)
     end
 
     assert capture_log(fun) =~ ~r/\*\* \(stop\) bad call: :whatever_call/u
@@ -32,7 +32,7 @@ defmodule UmbraTest.Behaviour.StrictBehaviourTest do
 
     fun = fn ->
       Task.start(fn -> GenServer.cast(pid, :whatever_cast) end)
-      Process.sleep(500)
+      Process.sleep(300)
     end
 
     assert capture_log(fun) =~ ~r/\*\* \(stop\) bad cast: :whatever_cast/u
@@ -43,7 +43,7 @@ defmodule UmbraTest.Behaviour.StrictBehaviourTest do
 
     fun = fn ->
       Task.start(fn -> Process.send(pid, :whatever_info, []) end)
-      Process.sleep(500)
+      Process.sleep(300)
     end
 
     assert capture_log(fun) =~ ~r/\*\* \(stop\) {:bad_info, :whatever_info}/u
