@@ -121,6 +121,18 @@ defmodule Umbra.GenServer do
       def __get_pid__(pid) when is_pid(pid), do: {:ok, pid}
 
       @doc false
+      @impl Umbra.GenServer
+      def __get_pid__(name) when is_atom(name), do: {:ok, name}
+
+      @doc false
+      @impl Umbra.GenServer
+      def __get_pid__({:global, _} = name), do: {:ok, name}
+
+      @doc false
+      @impl Umbra.GenServer
+      def __get_pid__({:via, _, _} = name), do: {:ok, name}
+
+      @doc false
       def start_link(state, opts \\ []), do: __MODULE__.__start__(true, state, opts)
       @doc false
       def start(state, opts \\ []), do: __MODULE__.__start__(false, state, opts)

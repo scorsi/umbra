@@ -42,13 +42,15 @@ defmodule Umbra.Extension.NameSetter do
   @doc false
   defmacro __using__(_opts) do
     quote location: :keep do
+      @behaviour Umbra.Extension.NameSetter
+
       @doc false
       @impl Umbra.GenServer
       def __start__(linked, state, opts) do
         opts = case Keyword.pop(opts, :name) do
           {nil, opts} ->
             case __get_process_name__(state) do
-              {:ok, name} -> opts ++ [name: name]
+              {:ok, name} when not is_nil(name) -> opts ++ [name: name]
               _ -> opts
             end
           {name, opts} -> opts ++ [name: name]
