@@ -87,7 +87,7 @@ defmodule Umbra.BehaviourTest do
     {:ok, pid} = TolerantBehaviour.start(nil)
     fun = fn ->
       Task.start(fn -> GenServer.call(pid, :whatever_call, 200) end)
-      Process.sleep(300)
+      Process.sleep(500)
     end
     assert capture_log(fun) =~ ~r/\*\* \(stop\) exited in: GenServer\.call\(#PID<\d+\.\d+\.\d+>, :whatever_call, \d+\)/
 
