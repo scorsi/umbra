@@ -1,41 +1,50 @@
 defmodule UmbraTest.Behaviour.DefaultBehaviourTest do
-  use ExUnit.Case, async: true
+  use ExUnit.Case, async: false
+
+  import ExUnit.CaptureLog
 
   alias UmbraTest.Support.Behaviour.DefaultBehaviour
-
-  setup do
-    Process.flag(:trap_exit, true)
-    :ok
-  end
 
   test "should have a standard init implementation" do
     {:ok, _} = DefaultBehaviour.start_link(:wow)
   end
 
   test "call should exit" do
-    {:ok, pid} = DefaultBehaviour.start_link(nil)
+    {:ok, pid} = DefaultBehaviour.start(nil)
 
-    :erlang.trace(pid, true, [:receive])
+    fun = fn ->
+      Task.start(fn -> GenServer.call(pid, :whatever_call) end)
+      Process.sleep(500)
+    end
 
-    {
-      {%RuntimeError{}, _},
-      {GenServer, :call, [^pid, :whatever_call, _]}
-    } = catch_exit(GenServer.call(pid, :whatever_call))
+    log = capture_log(fun)
 
-    assert_receive {:EXIT, ^pid, _}
-
-    assert_receive {:trace, ^pid, :receive, {:"$gen_call", _, :whatever_call}}
+    assert log =~ ~r/\*\* \(RuntimeError\) attempted to call GenServer #PID<\d+\.\d+\.\d+> but no handle_call\/3 clause was provided/u
   end
 
-  test "cast should raise" do
-    {:ok, pid} = DefaultBehaviour.start_link(nil)
+  test "cast should exit" do
+    {:ok, pid} = DefaultBehaviour.start(nil)
 
-    :erlang.trace(pid, true, [:receive])
+    fun = fn ->
+      Task.start(fn -> GenServer.cast(pid, :whatever_cast) end)
+      Process.sleep(500)
+    end
 
-    GenServer.cast(pid, :whatever_cast)
+    log = capture_log(fun)
 
-    assert_receive {:EXIT, ^pid, _}
+    assert log =~ ~r/\*\* \(RuntimeError\) attempted to cast GenServer #PID<\d+\.\d+\.\d+> but no handle_cast\/2 clause was provided/u
+  end
 
-    assert_receive {:trace, ^pid, :receive, {:"$gen_cast", :whatever_cast}}
+  test "info should exit" do
+    {:ok, pid} = DefaultBehaviour.start(nil)
+
+    fun = fn ->
+      Task.start(fn -> Process.send(pid, :whatever_info, []) end)
+      Process.sleep(500)
+    end
+
+    log = capture_log(fun)
+
+    assert log =~ ~r/\[error\] \[message: :whatever_info, module: UmbraTest\.Support\.Behaviour\.DefaultBehaviour, name: #PID<\d+\.\d+\.\d+>\]/u
   end
 end
