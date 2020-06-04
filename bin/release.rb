@@ -41,8 +41,9 @@ ensure
 end
 
 continue = system "git commit -am \"Release version #{version}\"" if continue
-continue = system "git tag v#{version}" if continue
 continue = system "git push" if continue
+continue = system "git tag v#{version}" if continue
+continue = system "git push --tags" if continue
 continue = system "mix deps.get" if continue
 continue = system "mix hex.publish" if continue
 
