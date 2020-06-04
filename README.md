@@ -7,8 +7,7 @@ We all know [ExActor](https://github.com/sasa1977/exactor) which is a good proje
 - is not maintained since 2017,
 - didn't support last GenServer functionalities like `continue`,
 - did generate a lot of warnings in the user codebase like unused variables,
-- did have a codebase not well documented, tested and not very comprehensive,
-- did ask user to do some stuff by their own, for example like with Registry.
+- isn't extensible.
 
 Umbra has been inspired by ExActor, but nothing more, it is a totally re-write.
  Umbra has a lightweight, well tested, highly documented and very comprehensive codebase.
