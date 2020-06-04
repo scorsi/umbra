@@ -1,7 +1,7 @@
 defmodule Umbra.MixProject do
   use Mix.Project
 
-  @release_version "0.0.4"
+  @release_version "0.1.0"
 
   def project do
     [
