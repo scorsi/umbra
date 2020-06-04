@@ -22,10 +22,10 @@ defmodule Umbra.MixProject do
       ],
       description: description(),
       package: package(),
-      elixirc_paths: elixirc_paths(Mix.env),
+      elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       deps: deps(),
-      docs: docs(),
+      docs: docs()
     ]
   end
 
@@ -45,12 +45,11 @@ defmodule Umbra.MixProject do
   defp deps do
     [
       {:keyword_validator, "~> 1.0"},
-
-
+      {:committee, "~> 1.0.0", only: :dev, runtime: false},
       {:ex_doc, ">= 0.0.0", only: [:dev, :test]},
       {:excoveralls, ">= 0.0.0", only: [:dev, :test]},
       {:inch_ex, ">= 0.0.0", only: [:dev, :docs, :test]},
-      {:credo, ">= 0.0.0", only: [:dev, :test]},
+      {:credo, ">= 0.0.0", only: [:dev, :test]}
     ]
   end
 
@@ -60,7 +59,7 @@ defmodule Umbra.MixProject do
       files: ~w(lib .formatter.exs mix.exs README* LICENSE*),
       licenses: ["MIT"],
       links: %{
-        "GitHub" => "https://github.com/scorsi/umbra",
+        "GitHub" => "https://github.com/scorsi/umbra"
       }
     ]
   end
@@ -74,19 +73,19 @@ defmodule Umbra.MixProject do
         Behaviours: [
           Umbra.Behaviour.Default,
           Umbra.Behaviour.Strict,
-          Umbra.Behaviour.Tolerant,
+          Umbra.Behaviour.Tolerant
         ],
         Extensions: [
           Umbra.Extension.NameSetter,
           Umbra.Extension.Registry,
-          Umbra.Extension.Ping,
+          Umbra.Extension.Ping
         ],
         Internal: [
           Umbra.Operations,
           Umbra.CodeGenerator,
-          Umbra.DefinitionExtractor,
+          Umbra.DefinitionExtractor
         ]
-      ],
+      ]
     ]
   end
 end
