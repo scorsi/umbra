@@ -64,7 +64,8 @@ defmodule Umbra.GenServer do
   GenServer.start(__MODULE__, state, opts) # or start_link if `linked` == true
   ```
   """
-  @callback __start__(linked :: boolean(), state :: struct(), opts :: keyword()) :: {:ok, PID.t} | {:error, any()}
+  @callback __start__(linked :: boolean(), state :: struct(), opts :: keyword()) ::
+              {:ok, PID.t()} | {:error, any()}
 
   @doc """
   This callback is used to retrieve the `PID.t` from the first argument of each client-side genserver function.
@@ -73,7 +74,7 @@ defmodule Umbra.GenServer do
 
   The `Umbra.Extension.Registry` extension did set this callback to retrieve the `PID.t` from the GenServer state/struct.
   """
-  @callback __get_pid__(pid_or_state :: struct() | PID.t) :: {:ok, PID.t} | {:error, any()}
+  @callback __get_pid__(pid_or_state :: struct() | PID.t()) :: {:ok, PID.t()} | {:error, any()}
 
   @doc """
   This callback is used to do some changement on state or just initialize some stuff for extensions.
@@ -88,6 +89,7 @@ defmodule Umbra.GenServer do
   @doc false
   defmacro __using__(opts) do
     behaviour = Keyword.get(opts, :behaviour, Umbra.Behaviour.Default)
+
     quote location: :keep do
       @behaviour Umbra.GenServer
 
@@ -109,7 +111,9 @@ defmodule Umbra.GenServer do
             "unknown registry" <> _ -> {:error, :unknown_registry}
             _ -> {:error, {:unknown_error, e}}
           end
-        e -> {:error, {:unknown_error, e}}
+
+        e ->
+          {:error, {:unknown_error, e}}
       end
 
       @doc false
@@ -137,10 +141,8 @@ defmodule Umbra.GenServer do
       @doc false
       def start(state, opts \\ []), do: __MODULE__.__start__(false, state, opts)
 
-      defoverridable [
-        __start__: 3,
-        __init__: 1,
-      ]
+      defoverridable __start__: 3,
+                     __init__: 1
 
       @before_compile Umbra.GenServer
     end

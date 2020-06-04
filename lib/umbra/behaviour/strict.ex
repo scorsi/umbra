@@ -24,11 +24,9 @@ defmodule Umbra.Behaviour.Strict do
       @impl GenServer
       def code_change(_old, state, _extra), do: {:ok, state}
 
-      defoverridable [
-        init: 1,
-        terminate: 2,
-        code_change: 3
-      ]
+      defoverridable init: 1,
+                     terminate: 2,
+                     code_change: 3
 
       @before_compile Umbra.Behaviour.Strict
     end

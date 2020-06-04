@@ -7,11 +7,12 @@ defmodule Umbra.RegistryExtensionTest do
 
       use Umbra.GenServer, behaviour: Umbra.Behaviour.Tolerant
       use Umbra.Extension.NameSetter
-      use Umbra.Extension.Registry,
-          registry: MyRegistryForTest,
-          via_key: fn %{id: id} -> id end
 
-      defcall {:get_name}, state: %{name: name} = state, do: {:reply, name, state}
+      use Umbra.Extension.Registry,
+        registry: MyRegistryForTest,
+        via_key: fn %{id: id} -> id end
+
+      defcall({:get_name}, state: %{name: name} = state, do: {:reply, name, state})
     end
 
     {:ok, _} = Registry.start_link(keys: :unique, name: MyRegistryForTest)
@@ -28,17 +29,18 @@ defmodule Umbra.RegistryExtensionTest do
 
   test "invalid registry options" do
     assert catch_error(
-      defmodule OopsRegistryGenServer do
-        defstruct [:id, :name]
+             defmodule OopsRegistryGenServer do
+               defstruct [:id, :name]
 
-        use Umbra.GenServer, behaviour: Umbra.Behaviour.Tolerant
-        use Umbra.Extension.NameSetter
-        use Umbra.Extension.Registry,
-            via_key: fn %{id: id} -> id end
+               use Umbra.GenServer, behaviour: Umbra.Behaviour.Tolerant
+               use Umbra.Extension.NameSetter
 
-        defcall {:get_name}, state: %{name: name} = state, do: {:reply, name, state}
-      end
-    )
+               use Umbra.Extension.Registry,
+                 via_key: fn %{id: id} -> id end
+
+               defcall({:get_name}, state: %{name: name} = state, do: {:reply, name, state})
+             end
+           )
 
     assert catch_error(
              defmodule OopsRegistryGenServer do
@@ -46,10 +48,11 @@ defmodule Umbra.RegistryExtensionTest do
 
                use Umbra.GenServer, behaviour: Umbra.Behaviour.Tolerant
                use Umbra.Extension.NameSetter
-               use Umbra.Extension.Registry,
-                   registry: :my_registry
 
-               defcall {:get_name}, state: %{name: name} = state, do: {:reply, name, state}
+               use Umbra.Extension.Registry,
+                 registry: :my_registry
+
+               defcall({:get_name}, state: %{name: name} = state, do: {:reply, name, state})
              end
            )
   end

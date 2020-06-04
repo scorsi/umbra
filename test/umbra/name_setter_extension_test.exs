@@ -11,9 +11,9 @@ defmodule Umbra.NameSetterExtensionTest do
         {:ok, name}
       end
 
-      definit state: state, do: {:ok, state}
+      definit(state: state, do: {:ok, state})
 
-      defcall {:get_val}, state: %{val: val} = state, do: {:reply, val, state}
+      defcall({:get_val}, state: %{val: val} = state, do: {:reply, val, state})
     end
 
     {:ok, _} = SimpleNameSetterExtension.start_link(%{name: :toto, val: 42})

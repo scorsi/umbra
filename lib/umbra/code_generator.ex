@@ -14,7 +14,8 @@ defmodule Umbra.CodeGenerator do
       end
     end
   end
-  def add_to_module(function)  do
+
+  def add_to_module(function) do
     quote do
       Module.eval_quoted(__MODULE__, unquote(function))
     end
@@ -37,49 +38,49 @@ defmodule Umbra.CodeGenerator do
   end
 
   defp change_private_in_function_ast(function, _function_name, false), do: function
+
   defp change_private_in_function_ast(function, function_name, true) do
     function
-    |> Macro.postwalk(
-         fn
-           {:def, _ = context, [{^function_name, _, _}, _] = args} ->
-             {:defp, context, args}
+    |> Macro.postwalk(fn
+      {:def, _ = context, [{^function_name, _, _}, _] = args} ->
+        {:defp, context, args}
 
-           other -> other
-         end
-       )
+      other ->
+        other
+    end)
   end
 
   defp add_decorator_in_function_ast(function, _function_name, nil), do: function
+
   defp add_decorator_in_function_ast(function, function_name, decorator) do
     function
-    |> Macro.postwalk(
-         fn
-           {_, _, [{^function_name, _, _}, _]} = func ->
-             {
-               :__block__,
-               [],
-               [
-                 (quote do: @impl unquote(decorator)),
-                 func
-               ]
-             }
+    |> Macro.postwalk(fn
+      {_, _, [{^function_name, _, _}, _]} = func ->
+        {
+          :__block__,
+          [],
+          [
+            quote(do: @impl(unquote(decorator))),
+            func
+          ]
+        }
 
-           other -> other
-         end
-       )
+      other ->
+        other
+    end)
   end
 
   defp add_when_in_function_ast(function, _function_name, nil), do: function
+
   defp add_when_in_function_ast(function, function_name, guards) do
     function
-    |> Macro.postwalk(
-         fn
-           {_ = def, _ = context, [{^function_name, _, _} = func_def, body]} ->
-             {def, context, [{:when, context, [func_def, guards]}, body]}
+    |> Macro.postwalk(fn
+      {_ = def, _ = context, [{^function_name, _, _} = func_def, body]} ->
+        {def, context, [{:when, context, [func_def, guards]}, body]}
 
-           other -> other
-         end
-       )
+      other ->
+        other
+    end)
   end
 
   def generate_client_function(type, definition, opts) when type in [:call, :cast, :info] do
@@ -102,34 +103,41 @@ defmodule Umbra.CodeGenerator do
 
   defp generate_client_inner_function(:info, argument) do
     quote do
-      case  __get_pid__(unquote(Macro.var(:pid_or_state, nil))) do
+      case __get_pid__(unquote(Macro.var(:pid_or_state, nil))) do
         {:ok, pid} ->
           case Process.send(pid, unquote(argument), []) do
             :ok -> :ok
             error -> {:error, error}
           end
-        error -> error
+
+        error ->
+          error
       end
     end
   end
+
   defp generate_client_inner_function(type, argument) do
     quote do
-      case  __get_pid__(unquote(Macro.var(:pid_or_state, nil))) do
+      case __get_pid__(unquote(Macro.var(:pid_or_state, nil))) do
         {:ok, pid} ->
           case GenServer.unquote(type)(pid, unquote(argument)) do
             :ok -> :ok
             result -> {:ok, result}
           end
-        error -> error
+
+        error ->
+          error
       end
     end
   end
 
-  def generate_server_function(type, definition, opts) when type in [:init, :call, :cast, :info, :continue] do
+  def generate_server_function(type, definition, opts)
+      when type in [:init, :call, :cast, :info, :continue] do
     body = Keyword.get(opts, :do)
     guards = Keyword.get(opts, :when)
 
-    server_definition_args = DefinitionExtractor.generate_server_definition_args(type, definition, opts)
+    server_definition_args =
+      DefinitionExtractor.generate_server_definition_args(type, definition, opts)
 
     generate_function(
       case type do
@@ -149,10 +157,13 @@ defmodule Umbra.CodeGenerator do
       case __init__(unquote(Macro.var(:state, nil))) do
         {:ok, state} ->
           unquote(body)
-        e -> e
+
+        e ->
+          e
       end
     end
   end
+
   defp generate_server_inner_function(_type, body) do
     quote do
       unquote(body)

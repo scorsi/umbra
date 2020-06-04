@@ -46,11 +46,13 @@ defmodule Umbra.Extension.Registry do
       opts,
       %{
         registry: [
-          type: [:module, :atom, :tuple], # add tuple to cheat macros
+          # add tuple to cheat macros
+          type: [:module, :atom, :tuple],
           required: true
         ],
         via_key: [
-          type: [{:function, 1}, :tuple], # add tuple to cheat macros
+          # add tuple to cheat macros
+          type: [{:function, 1}, :tuple],
           required: true
         ]
       }
@@ -63,13 +65,13 @@ defmodule Umbra.Extension.Registry do
       @doc false
       @impl Umbra.Extension.NameSetter
       def __get_process_name__(%{} = state) do
-        {:ok, {:via, Registry, {unquote(registry), (unquote(via_key)).(state)}}}
+        {:ok, {:via, Registry, {unquote(registry), unquote(via_key).(state)}}}
       end
 
       @doc false
       @impl Umbra.GenServer
       def __get_pid__(%{} = state) do
-        case Registry.lookup(unquote(registry), (unquote(via_key)).(state)) do
+        case Registry.lookup(unquote(registry), unquote(via_key).(state)) do
           [{pid, _}] -> {:ok, pid}
           [] -> {:error, :process_not_found}
           _ -> {:error, :unknown_error}

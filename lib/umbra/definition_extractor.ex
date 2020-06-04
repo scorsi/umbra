@@ -24,8 +24,8 @@ defmodule Umbra.DefinitionExtractor do
   @spec generate_handler_tuple(atom(), [tuple()]) :: tuple()
   def generate_handler_tuple(function_name, arguments)
 
-  def generate_handler_tuple(fun, args) when args == [], do: quote do: {unquote(fun)}
-  def generate_handler_tuple(fun, args), do: quote do: {unquote(fun), unquote_splicing(args)}
+  def generate_handler_tuple(fun, args) when args == [], do: quote(do: {unquote(fun)})
+  def generate_handler_tuple(fun, args), do: quote(do: {unquote(fun), unquote_splicing(args)})
 
   @doc """
   Generate the server definition arguments.
@@ -40,24 +40,28 @@ defmodule Umbra.DefinitionExtractor do
 
     [state]
   end
+
   def generate_server_definition_args(:call, definition, opts) do
     from = Keyword.get(opts, :from, Macro.var(:_from, nil))
     state = Keyword.get(opts, :state, Macro.var(:_state, nil))
 
-    handler = generate_handler_tuple(
-      extract_function_name(definition),
-      extract_arguments_for_declaration(definition)
-    )
+    handler =
+      generate_handler_tuple(
+        extract_function_name(definition),
+        extract_arguments_for_declaration(definition)
+      )
 
     [handler, from, state]
   end
+
   def generate_server_definition_args(_type, definition, opts) do
     state = Keyword.get(opts, :state, Macro.var(:_state, nil))
 
-    handler = generate_handler_tuple(
-      extract_function_name(definition),
-      extract_arguments_for_declaration(definition)
-    )
+    handler =
+      generate_handler_tuple(
+        extract_function_name(definition),
+        extract_arguments_for_declaration(definition)
+      )
 
     [handler, state]
   end
@@ -84,10 +88,10 @@ defmodule Umbra.DefinitionExtractor do
   def generate_client_definition_args(definition)
 
   def generate_client_definition_args(definition) do
-    [Macro.var(:pid_or_state, nil)] ++ (
-      definition
-      |> extract_arguments_for_declaration()
-      |> Enum.map(&shadow_arguments/1))
+    [Macro.var(:pid_or_state, nil)] ++
+      (definition
+       |> extract_arguments_for_declaration()
+       |> Enum.map(&shadow_arguments/1))
   end
 
   @doc """
@@ -115,7 +119,7 @@ defmodule Umbra.DefinitionExtractor do
         :"::",
         :%{},
         :{},
-        :<<>>,
+        :<<>>
       ]
     end
   end
@@ -138,7 +142,7 @@ defmodule Umbra.DefinitionExtractor do
         :defp,
         :defmacro,
         :defmacrop,
-        :defmodule,
+        :defmodule
       ]
     end
   end
@@ -160,17 +164,18 @@ defmodule Umbra.DefinitionExtractor do
   """
   defmacro is_var_name?(arg_name) do
     quote do
-      is_atom(unquote(arg_name)) and not (unquote(arg_name) in [
-        :_,
-        :\\,
-        :=,
-        :%,
-        :|,
-        :"::",
-        :%{},
-        :{},
-        :<<>>,
-      ])
+      is_atom(unquote(arg_name)) and
+        not (unquote(arg_name) in [
+               :_,
+               :\\,
+               :=,
+               :%,
+               :|,
+               :"::",
+               :%{},
+               :{},
+               :<<>>
+             ])
     end
   end
 
@@ -198,15 +203,19 @@ defmodule Umbra.DefinitionExtractor do
   def extract_function_name(definition)
 
   def extract_function_name({:{}, _, [fun]}) when is_var_name?(fun),
-      do: fun
+    do: fun
+
   def extract_function_name({:{}, _, [fun | _]}) when is_var_name?(fun),
-      do: fun
+    do: fun
+
   def extract_function_name({fun, _}) when is_var_name?(fun),
-      do: fun
+    do: fun
+
   def extract_function_name(fun) when is_var_name?(fun),
-      do: fun
+    do: fun
+
   def extract_function_name(_),
-      do: raise(ArgumentError, message: "invalid function definition")
+    do: raise(ArgumentError, message: "invalid function definition")
 
   @doc """
   Extract the arguments used for function declaration from a function definition.
@@ -232,13 +241,16 @@ defmodule Umbra.DefinitionExtractor do
   def extract_arguments_for_declaration(definition)
 
   def extract_arguments_for_declaration({:{}, _, [_]}),
-      do: []
+    do: []
+
   def extract_arguments_for_declaration({:{}, _, [_ | args]}),
-      do: args
+    do: args
+
   def extract_arguments_for_declaration({_, arg}),
-      do: [arg]
+    do: [arg]
+
   def extract_arguments_for_declaration(_),
-      do: []
+    do: []
 
   @doc """
   Extract the arguments used in calls from a function declaration.
@@ -270,14 +282,17 @@ defmodule Umbra.DefinitionExtractor do
   def extract_arguments_for_call(definition)
 
   def extract_arguments_for_call({:{}, _, [_]}),
-      do: []
+    do: []
+
   def extract_arguments_for_call({:{}, _, [_ | args]})
       when is_list(args),
       do: Enum.map(args, &extract_inner_arguments_for_call/1)
+
   def extract_arguments_for_call({_, arg}),
-      do: [extract_inner_arguments_for_call(arg)]
+    do: [extract_inner_arguments_for_call(arg)]
+
   def extract_arguments_for_call(_),
-      do: raise(ArgumentError, message: "invalid function definition")
+    do: raise(ArgumentError, message: "invalid function definition")
 
   @doc """
   Extract the argument used in call from an argument declaration.
@@ -347,37 +362,48 @@ defmodule Umbra.DefinitionExtractor do
   def extract_inner_arguments_for_call({:=, _, [_, {arg_name, _, _} = arg]})
       when is_var_name?(arg_name),
       do: arg
+
   def extract_inner_arguments_for_call({op, _ = context, args})
       when op in [:%{}, :{}, :%],
       do: {op, context, args}
+
   def extract_inner_arguments_for_call({op, _ = context, args})
       when is_op?(op) and is_list(args),
       do: {op, context, Enum.map(args, &extract_inner_arguments_for_call/1)}
+
   def extract_inner_arguments_for_call({a, _, _})
       when is_registered_keyword?(a),
       do: raise(ArgumentError, message: "invalid argument declaration")
+
   def extract_inner_arguments_for_call({fun, _, []})
       when is_var_name?(fun),
       do: raise(ArgumentError, message: "invalid argument declaration")
+
   def extract_inner_arguments_for_call({arg_name, _, _} = arg)
       when is_var_name?(arg_name),
       do: arg
+
   def extract_inner_arguments_for_call(arg)
       when is_binary(arg),
       do: arg
+
   def extract_inner_arguments_for_call(arg)
       when is_number(arg),
       do: arg
+
   def extract_inner_arguments_for_call(arg)
       when is_atom(arg),
       do: arg
+
   def extract_inner_arguments_for_call(arg)
       when is_list(arg),
       do: arg
+
   def extract_inner_arguments_for_call(nil),
-      do: nil
+    do: nil
+
   def extract_inner_arguments_for_call(_),
-      do: raise(ArgumentError, message: "invalid argument declaration")
+    do: raise(ArgumentError, message: "invalid argument declaration")
 
   @doc """
   Shadow inner argument declaration used for client function declaration.
@@ -403,9 +429,10 @@ defmodule Umbra.DefinitionExtractor do
   def shadow_arguments(definition)
 
   def shadow_arguments({:=, _ = context, [values, _ = var]}),
-      do: {:=, context, [shadow_inner_arguments(values), var]}
+    do: {:=, context, [shadow_inner_arguments(values), var]}
+
   def shadow_arguments(arg),
-      do: arg
+    do: arg
 
   @doc """
   Shadow left value in argument declaration/assignment used for client function declaration.
@@ -448,22 +475,26 @@ defmodule Umbra.DefinitionExtractor do
   def shadow_inner_arguments({op, _ = context, values})
       when is_op?(op),
       do: {op, context, Enum.map(values, &shadow_inner_arguments/1)}
+
   def shadow_inner_arguments(list)
       when is_list(list),
       do: Enum.map(list, &shadow_inner_arguments/1)
+
   def shadow_inner_arguments({arg_name, _ = context, _ = module} = inner_argument)
       when is_var_name?(arg_name),
-      do: (
-        if arg_name
-           |> Atom.to_string()
-           |> String.starts_with?("_") do
-          inner_argument
-        else
-          {:"_#{arg_name}", context, module}
-        end)
+      do:
+        (if arg_name
+            |> Atom.to_string()
+            |> String.starts_with?("_") do
+           inner_argument
+         else
+           {:"_#{arg_name}", context, module}
+         end)
+
   def shadow_inner_arguments({val, inner_arg})
       when is_var_name?(val) and is_tuple(inner_arg),
       do: {val, shadow_inner_arguments(inner_arg)}
+
   def shadow_inner_arguments(v),
-      do: v
+    do: v
 end

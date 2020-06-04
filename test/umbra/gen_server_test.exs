@@ -5,15 +5,15 @@ defmodule Umbra.GenServerTest do
     defmodule SimpleIncrementer do
       use Umbra.GenServer
 
-      definit state: state, do: {:ok, state}
+      definit(state: state, do: {:ok, state})
 
-      defcall {:get_state}, state: state, do: {:reply, state, state}
+      defcall({:get_state}, state: state, do: {:reply, state, state})
 
-      defcast {:set_state, new_state}, do: {:noreply, new_state}
+      defcast({:set_state, new_state}, do: {:noreply, new_state})
 
-      defcast {:increment}, state: state, do: {:noreply, state + 1}
+      defcast({:increment}, state: state, do: {:noreply, state + 1})
 
-      defcast {:decrement}, state: state, do: {:noreply, state - 1}
+      defcast({:decrement}, state: state, do: {:noreply, state - 1})
     end
 
     {:ok, pid} = SimpleIncrementer.start_link(0)
@@ -68,14 +68,14 @@ defmodule Umbra.GenServerTest do
     defmodule WithGuards do
       use Umbra.GenServer, behaviour: Umbra.Behaviour.Strict
 
-      definit state: state, when: is_number(state), do: {:ok, state}
+      definit(state: state, when: is_number(state), do: {:ok, state})
 
-      defcast {:set_state, new_state}, when: is_number(new_state), do: {:noreply, new_state}
-      defcall {:do_that, a}, when: a > 0 and a < 10, state: state, do: {:reply, state + a, state}
+      defcast({:set_state, new_state}, when: is_number(new_state), do: {:noreply, new_state})
+      defcall({:do_that, a}, when: a > 0 and a < 10, state: state, do: {:reply, state + a, state})
 
-      defcall {:whats_this?, a}, when: is_number(a), state: state, do: {:reply, :a_number, state}
-      defcall {:whats_this?, a}, when: is_atom(a), state: state, do: {:reply, :an_atom, state}
-      defcall {:whats_this?, a}, state: state, do: {:reply, {:dont_know, a}, state}
+      defcall({:whats_this?, a}, when: is_number(a), state: state, do: {:reply, :a_number, state})
+      defcall({:whats_this?, a}, when: is_atom(a), state: state, do: {:reply, :an_atom, state})
+      defcall({:whats_this?, a}, state: state, do: {:reply, {:dont_know, a}, state})
     end
 
     {:error, {:function_clause, _}} = WithGuards.start(nil)
@@ -104,13 +104,13 @@ defmodule Umbra.GenServerTest do
     defmodule Privates do
       use Umbra.GenServer
 
-      definit state: state, do: {:ok, state}
+      definit(state: state, do: {:ok, state})
 
       def get_state(a), do: _get_state(a)
 
-      defcall {:_get_state}, private: true, state: state, do: {:reply, state, state}
+      defcall({:_get_state}, private: true, state: state, do: {:reply, state, state})
 
-      defcast {:set_state, new_state}, private: true, do: {:noreply, new_state}
+      defcast({:set_state, new_state}, private: true, do: {:noreply, new_state})
     end
 
     {:ok, pid} = Privates.start(:hello_world)
@@ -125,13 +125,25 @@ defmodule Umbra.GenServerTest do
     defmodule ServerClient do
       use Umbra.GenServer
 
-      definit state: state, do: {:ok, state}
+      definit(state: state, do: {:ok, state})
 
-      defcall {:do_a_thing, a}, server: false
+      defcall({:do_a_thing, a}, server: false)
 
-      defcall {:do_a_thing, a}, client: false, when: a == :wow, state: state, do: {:reply, :haha, state}
-      defcall {:do_a_thing, a}, client: false, when: a == :hum, state: state, do: {:reply, :yes_ok, state}
-      defcall {:do_a_thing, a}, client: false, state: state, do: {:reply, :what?, state}
+      defcall({:do_a_thing, a},
+        client: false,
+        when: a == :wow,
+        state: state,
+        do: {:reply, :haha, state}
+      )
+
+      defcall({:do_a_thing, a},
+        client: false,
+        when: a == :hum,
+        state: state,
+        do: {:reply, :yes_ok, state}
+      )
+
+      defcall({:do_a_thing, a}, client: false, state: state, do: {:reply, :what?, state})
     end
 
     {:ok, pid} = ServerClient.start(:hello_world)
@@ -146,7 +158,7 @@ defmodule Umbra.GenServerTest do
              defmodule NoServerAndClient do
                use Umbra.GenServer
 
-               defcall {:oops}, server: false, client: false
+               defcall({:oops}, server: false, client: false)
              end
            )
   end
@@ -156,7 +168,7 @@ defmodule Umbra.GenServerTest do
              defmodule NoServerAndClient do
                use Umbra.GenServer
 
-               defcall {:oops}
+               defcall({:oops})
              end
            )
   end
@@ -165,13 +177,13 @@ defmodule Umbra.GenServerTest do
     defmodule ContinueCompute do
       use Umbra.GenServer
 
-      definit state: state, do: {:ok, state}
+      definit(state: state, do: {:ok, state})
 
       defcast {:do_heavy_computation, a, b}, state: state do
         {:noreply, state, {:continue, {:calcul_it, a, b}}}
       end
 
-      defcontinue {:calcul_it, a, b}, state: state, do: {:noreply, a + b}
+      defcontinue({:calcul_it, a, b}, state: state, do: {:noreply, a + b})
 
       defcall {:do_heavy_computation_2, a, b}, state: state do
         {:reply, state, state, {:continue, {:calcul_it_2, a, b}}}
@@ -196,11 +208,15 @@ defmodule Umbra.GenServerTest do
     defmodule InfoGenServer do
       use Umbra.GenServer
 
-      definit state: state, do: {:ok, state}
+      definit(state: state, do: {:ok, state})
 
-      defcall {:get_state}, state: state, do: {:reply, state, state}
+      defcall({:get_state}, state: state, do: {:reply, state, state})
 
-      definfo {:set_state, new_state}, client: true, when: is_number(new_state), do: {:noreply, new_state}
+      definfo({:set_state, new_state},
+        client: true,
+        when: is_number(new_state),
+        do: {:noreply, new_state}
+      )
 
       definfo {:ping, pid}, state: state do
         Process.send(pid, :pong, [])
