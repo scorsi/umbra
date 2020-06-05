@@ -29,39 +29,39 @@ defmodule Umbra.GenServerTest do
     assert :ok == SimpleIncrementer.set_state(pid, 0)
     assert 0 == :sys.get_state(pid)
 
-    assert_receive {:trace, ^pid, :receive, {:"$gen_call", _, {:get_state}}}
+    assert_receive {:trace, ^pid, :receive, {:"$gen_call", _, :get_state}}
     assert_receive {:trace, ^pid, :receive, {:"$gen_cast", {:set_state, 42}}}
     assert_receive {:trace, ^pid, :receive, {:"$gen_cast", {:set_state, 0}}}
 
     assert :ok == SimpleIncrementer.increment(pid)
     assert {:ok, 1} == SimpleIncrementer.get_state(pid)
 
-    assert_receive {:trace, ^pid, :receive, {:"$gen_cast", {:increment}}}
-    assert_receive {:trace, ^pid, :receive, {:"$gen_call", _, {:get_state}}}
+    assert_receive {:trace, ^pid, :receive, {:"$gen_cast", :increment}}
+    assert_receive {:trace, ^pid, :receive, {:"$gen_call", _, :get_state}}
 
     assert :ok == SimpleIncrementer.increment(pid)
     assert {:ok, 2} == SimpleIncrementer.get_state(pid)
 
-    assert_receive {:trace, ^pid, :receive, {:"$gen_cast", {:increment}}}
-    assert_receive {:trace, ^pid, :receive, {:"$gen_call", _, {:get_state}}}
+    assert_receive {:trace, ^pid, :receive, {:"$gen_cast", :increment}}
+    assert_receive {:trace, ^pid, :receive, {:"$gen_call", _, :get_state}}
 
     assert :ok == SimpleIncrementer.decrement(pid)
     assert {:ok, 1} == SimpleIncrementer.get_state(pid)
 
-    assert_receive {:trace, ^pid, :receive, {:"$gen_cast", {:decrement}}}
-    assert_receive {:trace, ^pid, :receive, {:"$gen_call", _, {:get_state}}}
+    assert_receive {:trace, ^pid, :receive, {:"$gen_cast", :decrement}}
+    assert_receive {:trace, ^pid, :receive, {:"$gen_call", _, :get_state}}
 
     assert :ok == SimpleIncrementer.decrement(pid)
     assert {:ok, 0} == SimpleIncrementer.get_state(pid)
 
-    assert_receive {:trace, ^pid, :receive, {:"$gen_cast", {:decrement}}}
-    assert_receive {:trace, ^pid, :receive, {:"$gen_call", _, {:get_state}}}
+    assert_receive {:trace, ^pid, :receive, {:"$gen_cast", :decrement}}
+    assert_receive {:trace, ^pid, :receive, {:"$gen_call", _, :get_state}}
 
     assert :ok == SimpleIncrementer.decrement(pid)
     assert {:ok, -1} == SimpleIncrementer.get_state(pid)
 
-    assert_receive {:trace, ^pid, :receive, {:"$gen_cast", {:decrement}}}
-    assert_receive {:trace, ^pid, :receive, {:"$gen_call", _, {:get_state}}}
+    assert_receive {:trace, ^pid, :receive, {:"$gen_cast", :decrement}}
+    assert_receive {:trace, ^pid, :receive, {:"$gen_call", _, :get_state}}
   end
 
   test "def func with guards should be fine" do
@@ -127,7 +127,7 @@ defmodule Umbra.GenServerTest do
 
       definit(state: state, do: {:ok, state})
 
-      defcall({:do_a_thing, a}, server: false)
+      defcall({:do_a_thing, _a}, server: false)
 
       defcall({:do_a_thing, a},
         client: false,
@@ -143,7 +143,7 @@ defmodule Umbra.GenServerTest do
         do: {:reply, :yes_ok, state}
       )
 
-      defcall({:do_a_thing, a}, client: false, state: state, do: {:reply, :what?, state})
+      defcall({:do_a_thing, _a}, client: false, state: state, do: {:reply, :what?, state})
     end
 
     {:ok, pid} = ServerClient.start(:hello_world)
@@ -183,13 +183,13 @@ defmodule Umbra.GenServerTest do
         {:noreply, state, {:continue, {:calcul_it, a, b}}}
       end
 
-      defcontinue({:calcul_it, a, b}, state: state, do: {:noreply, a + b})
+      defcontinue({:calcul_it, a, b}, do: {:noreply, a + b})
 
       defcall {:do_heavy_computation_2, a, b}, state: state do
         {:reply, state, state, {:continue, {:calcul_it_2, a, b}}}
       end
 
-      defcontinue {:calcul_it_2, a, b}, state: state do
+      defcontinue {:calcul_it_2, a, b} do
         Process.sleep(200)
         {:noreply, a + b}
       end

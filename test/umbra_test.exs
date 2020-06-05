@@ -4,5 +4,5 @@ defmodule UmbraTest do
   doctest Umbra.GenServer
   doctest Umbra.Operations
   doctest Umbra.DefinitionExtractor
-  doctest Umbra.CodeGenerator
+  doctest Umbra.FunctionGenerator
 end

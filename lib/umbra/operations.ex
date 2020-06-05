@@ -5,7 +5,7 @@ defmodule Umbra.Operations do
   It defines all macros `definit/2`, `defcall/3`, `defcast/3`, `definfo/3` and `defcontinue/3`.
   """
 
-  alias Umbra.CodeGenerator
+  alias Umbra.FunctionGenerator
 
   @doc """
   Generate the `GenServer` `c:GenServer.init/1` callback.
@@ -170,7 +170,7 @@ defmodule Umbra.Operations do
   defmacro defcontinue(definition, opts \\ [], body \\ []),
     do: generate(:continue, definition, opts ++ body)
 
-  defp generate(type, def, opts) do
+  defp generate(type, definition, opts) do
     opts = options(type, opts)
 
     if Keyword.get(opts, :server) and Keyword.get(opts, :do) == nil,
@@ -178,8 +178,12 @@ defmodule Umbra.Operations do
 
     functions =
       [
-        if(Keyword.get(opts, :client), do: CodeGenerator.generate_client_function(type, def, opts)),
-        if(Keyword.get(opts, :server), do: CodeGenerator.generate_server_function(type, def, opts))
+        if(Keyword.get(opts, :client),
+          do: FunctionGenerator.generate_client_function(type, definition, opts)
+        ),
+        if(Keyword.get(opts, :server),
+          do: FunctionGenerator.generate_server_function(type, definition, opts)
+        )
       ]
       |> Enum.filter(&(!is_nil(&1)))
 
@@ -190,7 +194,7 @@ defmodule Umbra.Operations do
     end
 
     functions
-    |> CodeGenerator.add_to_module()
+    |> FunctionGenerator.add_to_module()
   end
 
   defp options(:init, opts) do
