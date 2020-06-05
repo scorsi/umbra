@@ -48,20 +48,18 @@ defmodule UmbraTest.ArgumentsGeneratorTest do
         expect: [{:umbra_var_1, '', nil}]
       }
     ]
-    |> Enum.each(
-         fn %{definition: definition, expect: expect} ->
-           result =
-             definition
-             |> DefinitionExtractor.extract_arguments_from_definition()
-             |> ArgumentsGenerator.generate_arguments(
-                  unshadow: true,
-                  assignments: false,
-                  optimizations: true
-                )
+    |> Enum.each(fn %{definition: definition, expect: expect} ->
+      result =
+        definition
+        |> DefinitionExtractor.extract_arguments_from_definition()
+        |> ArgumentsGenerator.generate_arguments(
+          unshadow: true,
+          assignments: false,
+          optimizations: true
+        )
 
-           assert expect == result
-         end
-       )
+      assert expect == result
+    end)
   end
 
   test "options [unshadow: true, shadow: true, optimizations: true] is ok" do
@@ -151,7 +149,7 @@ defmodule UmbraTest.ArgumentsGeneratorTest do
       %{
         definition:
           quote do
-            {:a, <<127 :: rest>> = payload}
+            {:a, <<127::rest>> = payload}
           end,
         expect: [
           {
@@ -174,19 +172,17 @@ defmodule UmbraTest.ArgumentsGeneratorTest do
         ]
       }
     ]
-    |> Enum.each(
-         fn %{definition: definition, expect: expect} ->
-           result =
-             definition
-             |> DefinitionExtractor.extract_arguments_from_definition()
-             |> ArgumentsGenerator.generate_arguments(
-                  unshadow: true,
-                  shadow: true,
-                  optimizations: true
-                )
+    |> Enum.each(fn %{definition: definition, expect: expect} ->
+      result =
+        definition
+        |> DefinitionExtractor.extract_arguments_from_definition()
+        |> ArgumentsGenerator.generate_arguments(
+          unshadow: true,
+          shadow: true,
+          optimizations: true
+        )
 
-           assert expect == result
-         end
-       )
+      assert expect == result
+    end)
   end
 end
