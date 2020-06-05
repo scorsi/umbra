@@ -16,12 +16,12 @@ defmodule Umbra.DefinitionExtractor do
     fun
   end
 
-  defp do_extract_function_name_from_definition({:{}, _, [fun | args]})
-       when is_atom(fun) and not is_registered_keyword(fun) and is_list(args) do
+  defp do_extract_function_name_from_definition({:{}, _, [fun | _]})
+       when is_atom(fun) and not is_registered_keyword(fun) do
     fun
   end
 
-  defp do_extract_function_name_from_definition({fun, arg})
+  defp do_extract_function_name_from_definition({fun, _})
        when is_atom(fun) and not is_registered_keyword(fun) do
     fun
   end

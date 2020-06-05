@@ -75,8 +75,8 @@ defmodule Umbra.FunctionGenerator do
   defp generate_client_definition_args(definition) do
     [Macro.var(:pid_or_state, nil)] ++
       (definition
-       |> Umbra.DefinitionExtractor.extract_arguments_from_definition()
-       |> Umbra.ArgumentsGenerator.generate_arguments(
+       |> DefinitionExtractor.extract_arguments_from_definition()
+       |> ArgumentsGenerator.generate_arguments(
          unshadow: true,
          shadow: true,
          optimizations: true
@@ -108,8 +108,8 @@ defmodule Umbra.FunctionGenerator do
     generate_handler(
       DefinitionExtractor.extract_function_name_from_definition(definition),
       definition
-      |> Umbra.DefinitionExtractor.extract_arguments_from_definition()
-      |> Umbra.ArgumentsGenerator.generate_arguments(
+      |> DefinitionExtractor.extract_arguments_from_definition()
+      |> ArgumentsGenerator.generate_arguments(
         unshadow: true,
         assignments: false,
         optimizations: true
