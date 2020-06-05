@@ -47,6 +47,7 @@ defmodule Umbra.MixProject do
       {:keyword_validator, "~> 1.0"},
       {:committee, "~> 1.0.0", only: :dev, runtime: false},
       {:ex_doc, ">= 0.0.0", only: [:dev, :test]},
+      {:quixir, "~> 0.9", only: :test},
       {:excoveralls, ">= 0.0.0", only: [:dev, :test]},
       {:inch_ex, ">= 0.0.0", only: [:dev, :docs, :test]},
       {:credo, ">= 0.0.0", only: [:dev, :test]}
