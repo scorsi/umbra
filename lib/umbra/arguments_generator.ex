@@ -53,11 +53,18 @@ defmodule Umbra.ArgumentsGenerator do
 
   defp do_generate_arguments({:=, meta, [_, right]}, %{assignments: false} = options)
        when is_list(meta) do
-    do_generate_arguments(right, %{options | in_assignment?: true})
+    do_generate_arguments(right, options)
   end
 
   defp do_generate_arguments({:=, meta, [left, right]}, options) when is_list(meta) do
-    {:=, meta, [do_generate_arguments(left, %{options | in_assignment?: true}), right]}
+    {
+      :=,
+      meta,
+      [
+        do_generate_arguments(left, %{options | in_assignment?: true}),
+        do_generate_arguments(right, options)
+      ]
+    }
   end
 
   defp do_generate_arguments(
@@ -128,12 +135,15 @@ defmodule Umbra.ArgumentsGenerator do
     {do_generate_arguments(left, options), do_generate_arguments(right, options)}
   end
 
-  defp do_generate_arguments(list, %{
-         in_assignment?: false,
-         assignments: false,
-         optimizations: true,
-         index: index
-       })
+  defp do_generate_arguments(
+         list,
+         %{
+           in_assignment?: false,
+           assignments: false,
+           optimizations: true,
+           index: index
+         }
+       )
        when is_list(list) do
     Macro.var(:"umbra_var_#{index}", nil)
   end

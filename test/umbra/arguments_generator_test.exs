@@ -27,6 +27,15 @@ defmodule UmbraTest.ArgumentsGeneratorTest do
       %{
         definition:
           quote do
+            {:a, 3 = _c}
+          end,
+        expect: [
+          {:c, '', UmbraTest.ArgumentsGeneratorTest}
+        ]
+      },
+      %{
+        definition:
+          quote do
             {:a, [head | tail], 42 = a}
           end,
         expect: [{:umbra_var_1, '', nil}, {:a, '', UmbraTest.ArgumentsGeneratorTest}]
@@ -39,18 +48,20 @@ defmodule UmbraTest.ArgumentsGeneratorTest do
         expect: [{:umbra_var_1, '', nil}]
       }
     ]
-    |> Enum.each(fn %{definition: definition, expect: expect} ->
-      result =
-        definition
-        |> DefinitionExtractor.extract_arguments_from_definition()
-        |> ArgumentsGenerator.generate_arguments(
-          unshadow: true,
-          assignments: false,
-          optimizations: true
-        )
+    |> Enum.each(
+         fn %{definition: definition, expect: expect} ->
+           result =
+             definition
+             |> DefinitionExtractor.extract_arguments_from_definition()
+             |> ArgumentsGenerator.generate_arguments(
+                  unshadow: true,
+                  assignments: false,
+                  optimizations: true
+                )
 
-      assert expect == result
-    end)
+           assert expect == result
+         end
+       )
   end
 
   test "options [unshadow: true, shadow: true, optimizations: true] is ok" do
@@ -91,19 +102,34 @@ defmodule UmbraTest.ArgumentsGeneratorTest do
       %{
         definition:
           quote do
+            {:a, 3 = _c}
+          end,
+        expect: [
+          {:=, '', [3, {:c, '', UmbraTest.ArgumentsGeneratorTest}]}
+        ]
+      },
+      %{
+        definition:
+          quote do
             {:a, %{something: true, name: _name, id: id}}
           end,
         expect: [
-          {:=, '',
-           [
-             {:%{}, [],
-              [
-                something: true,
-                name: {:_name, [], UmbraTest.ArgumentsGeneratorTest},
-                id: {:_id, [], UmbraTest.ArgumentsGeneratorTest}
-              ]},
-             {:umbra_var_1, [], nil}
-           ]}
+          {
+            :=,
+            '',
+            [
+              {
+                :%{},
+                [],
+                [
+                  something: true,
+                  name: {:_name, [], UmbraTest.ArgumentsGeneratorTest},
+                  id: {:_id, [], UmbraTest.ArgumentsGeneratorTest}
+                ]
+              },
+              {:umbra_var_1, [], nil}
+            ]
+          }
         ]
       },
       %{
@@ -125,7 +151,7 @@ defmodule UmbraTest.ArgumentsGeneratorTest do
       %{
         definition:
           quote do
-            {:a, <<127::rest>> = payload}
+            {:a, <<127 :: rest>> = payload}
           end,
         expect: [
           {
@@ -148,17 +174,19 @@ defmodule UmbraTest.ArgumentsGeneratorTest do
         ]
       }
     ]
-    |> Enum.each(fn %{definition: definition, expect: expect} ->
-      result =
-        definition
-        |> DefinitionExtractor.extract_arguments_from_definition()
-        |> ArgumentsGenerator.generate_arguments(
-          unshadow: true,
-          shadow: true,
-          optimizations: true
-        )
+    |> Enum.each(
+         fn %{definition: definition, expect: expect} ->
+           result =
+             definition
+             |> DefinitionExtractor.extract_arguments_from_definition()
+             |> ArgumentsGenerator.generate_arguments(
+                  unshadow: true,
+                  shadow: true,
+                  optimizations: true
+                )
 
-      assert expect == result
-    end)
+           assert expect == result
+         end
+       )
   end
 end
